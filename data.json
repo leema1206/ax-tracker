@@ -1,0 +1,18 @@
+{
+  "events": [],
+  "schema": [
+    { "key": "title", "label": "행사명", "type": "text", "required": true },
+    { "key": "date", "label": "날짜", "type": "date", "required": true },
+    { "key": "end_date", "label": "종료일", "type": "date", "required": false },
+    { "key": "type", "label": "행사 유형", "type": "select", "options": "컨퍼런스,세미나,웨비나,포럼,해커톤,전시회", "required": true },
+    { "key": "region", "label": "지역", "type": "select", "options": "국내,해외,온라인", "required": true },
+    { "key": "location", "label": "장소", "type": "text", "required": false },
+    { "key": "organizer", "label": "주최/주관", "type": "text", "required": false },
+    { "key": "cost", "label": "참가비", "type": "select", "options": "무료,유료,미정", "required": false },
+    { "key": "url", "label": "신청 링크", "type": "url", "required": false },
+    { "key": "description", "label": "행사 설명", "type": "textarea", "required": false },
+    { "key": "topics", "label": "주제 태그", "type": "text", "required": false }
+  ],
+  "collections": [],
+  "last_updated": null
+}
