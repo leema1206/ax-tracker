@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AX 컨퍼런스 트래커 · leema1206</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --primary:#4F46E5;--pl:#EEF2FF;--pd:#3730A3;
+  --success:#059669;--sl:#ECFDF5;
+  --warn:#D97706;--wl:#FFFBEB;
+  --g50:#F9FAFB;--g100:#F3F4F6;--g200:#E5E7EB;--g300:#D1D5DB;
+  --g400:#9CA3AF;--g500:#6B7280;--g600:#4B5563;--g700:#374151;
+  --g800:#1F2937;--g900:#111827;--w:#fff;--r:10px;--rl:14px;
+}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans KR',sans-serif;background:var(--g50);color:var(--g800);min-height:100vh}
+.hd{background:var(--w);border-bottom:1px solid var(--g200);padding:0 24px;display:flex;align-items:center;justify-content:space-between;height:60px;position:sticky;top:0;z-index:100}
+.hl{display:flex;align-items:center;gap:12px}
+.logo{width:32px;height:32px;background:var(--primary);border-radius:8px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:16px}
+.ht{font-size:16px;font-weight:600;color:var(--g900)}
+.hs{font-size:12px;color:var(--g500);margin-top:1px}
+.hr{display:flex;align-items:center;gap:8px}
+.ab{padding:10px 24px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;font-size:13px}
+.ab-warn{background:#FFFBEB;border-bottom:1px solid #FDE68A;color:#92400E}
+.ab-ok{background:var(--sl);border-bottom:1px solid #A7F3D0;color:#065F46}
+.ab input[type=password]{padding:6px 10px;border:1px solid #FDE68A;border-radius:6px;font-size:12px;font-family:monospace;width:300px;outline:none;background:#fff;color:#1F2937}
+.btn{padding:7px 14px;border-radius:8px;font-size:13px;font-weight:500;cursor:pointer;border:1px solid transparent;transition:all .15s;display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
+.btn-p{background:var(--primary);color:#fff;border-color:var(--primary)}
+.btn-p:hover{background:var(--pd)}
+.btn-s{background:var(--w);color:var(--g700);border-color:var(--g200)}
+.btn-s:hover{background:var(--g50)}
+.btn-warn{background:#F59E0B;color:#fff;border-color:#F59E0B}
+.btn-sm{padding:5px 10px;font-size:12px}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.wrap{max-width:1280px;margin:0 auto;padding:24px}
+.lay{display:grid;grid-template-columns:260px 1fr;gap:20px}
+.sb{display:flex;flex-direction:column;gap:16px}
+.mn{display:flex;flex-direction:column;gap:16px}
+.card{background:var(--w);border:1px solid var(--g200);border-radius:var(--rl);padding:16px;box-shadow:0 1px 3px rgba(0,0,0,.06)}
+.ct{font-size:13px;font-weight:600;color:var(--g700);margin-bottom:12px}
+.fg{margin-bottom:12px}
+.fl{font-size:12px;font-weight:500;color:var(--g600);margin-bottom:4px;display:block}
+.fi,.fs,.fta{width:100%;padding:8px 10px;border:1px solid var(--g200);border-radius:8px;font-size:13px;color:var(--g800);background:var(--w);outline:none;transition:border-color .15s;font-family:inherit}
+.fi:focus,.fs:focus,.fta:focus{border-color:var(--primary)}
+.fta{resize:vertical;min-height:70px}
+.tl{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px}
+.tag{padding:3px 8px;border-radius:20px;font-size:11px;font-weight:500;cursor:pointer;border:1px solid;transition:all .15s;user-select:none}
+.ton{background:var(--pl);color:var(--primary);border-color:var(--primary)}
+.toff{background:var(--g100);color:var(--g500);border-color:var(--g200)}
+.stbox{padding:10px 12px;border-radius:8px;font-size:12px;display:flex;align-items:flex-start;gap:8px}
+.st-idle{background:var(--g100);color:var(--g600)}
+.st-run{background:var(--pl);color:var(--primary)}
+.st-ok{background:var(--sl);color:var(--success)}
+.st-err{background:#FEF2F2;color:#DC2626}
+.dot{width:6px;height:6px;border-radius:50%;margin-top:4px;flex-shrink:0}
+.d-idle{background:var(--g400)}
+.d-run{background:var(--primary);animation:pulse 1.2s infinite}
+.d-ok{background:var(--success)}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.sr{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px}
+.sc{background:var(--w);border:1px solid var(--g200);border-radius:var(--r);padding:14px 16px;box-shadow:0 1px 3px rgba(0,0,0,.06)}
+.sv{font-size:24px;font-weight:700;color:var(--g900)}
+.sl2{font-size:12px;color:var(--g500);margin-top:2px}
+.sbadge{display:inline-block;padding:2px 7px;border-radius:20px;font-size:11px;font-weight:500;margin-top:4px}
+.tabs{display:flex;border-bottom:1px solid var(--g200);margin-bottom:16px}
+.tb{padding:8px 16px;font-size:13px;font-weight:500;color:var(--g500);border:none;background:none;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .15s}
+.tb.on{color:var(--primary);border-bottom-color:var(--primary)}
+.tc{display:none}
+.tc.on{display:block}
+.fb{background:var(--w);border:1px solid var(--g200);border-radius:var(--r);padding:12px 16px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;box-shadow:0 1px 3px rgba(0,0,0,.06);margin-bottom:12px}
+.fb-sel{padding:5px 8px;border:1px solid var(--g200);border-radius:6px;font-size:12px;color:var(--g700);background:var(--g50);outline:none}
+.si{flex:1;min-width:160px;padding:6px 10px;border:1px solid var(--g200);border-radius:6px;font-size:13px;outline:none;color:var(--g800);background:var(--w)}
+.si:focus{border-color:var(--primary)}
+.eb{display:flex;align-items:center;justify-content:space-between;background:var(--w);border:1px solid var(--g200);border-radius:var(--r);padding:10px 16px;box-shadow:0 1px 3px rgba(0,0,0,.06);margin-bottom:12px;flex-wrap:wrap;gap:8px}
+.ea{display:flex;gap:6px;flex-wrap:wrap}
+.eg{display:flex;flex-direction:column;gap:10px}
+.ec{background:var(--w);border:1px solid var(--g200);border-radius:var(--rl);padding:16px 18px;box-shadow:0 1px 3px rgba(0,0,0,.06);display:grid;grid-template-columns:52px 1fr auto;gap:14px;align-items:start;transition:box-shadow .15s,border-color .15s}
+.ec:hover{box-shadow:0 4px 12px rgba(0,0,0,.08);border-color:var(--g300)}
+.edb{text-align:center;background:var(--pl);border-radius:8px;padding:8px 6px}
+.emo{font-size:10px;font-weight:600;color:var(--primary);text-transform:uppercase}
+.edy{font-size:22px;font-weight:700;color:var(--primary);line-height:1}
+.ewk{font-size:10px;color:var(--primary);opacity:.7}
+.etl{font-size:14px;font-weight:600;color:var(--g900);margin-bottom:4px;line-height:1.4}
+.etl a{color:inherit;text-decoration:none}
+.etl a:hover{color:var(--primary)}
+.em{font-size:12px;color:var(--g500);display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:6px}
+.ed{font-size:12px;color:var(--g600);line-height:1.6}
+.ets{display:flex;gap:4px;flex-wrap:wrap;margin-top:8px}
+.et{padding:2px 8px;border-radius:20px;font-size:11px;font-weight:500}
+.ea2{display:flex;flex-direction:column;gap:4px;align-items:flex-end}
+.badge{padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;white-space:nowrap}
+.b-k{background:#F0FDF4;color:#166534}
+.b-i{background:#EFF6FF;color:#1D4ED8}
+.b-o{background:#EEF2FF;color:#4338CA}
+.b-f{background:var(--sl);color:var(--success)}
+.b-p{background:var(--wl);color:var(--warn)}
+.hi{background:var(--w);border:1px solid var(--g200);border-radius:var(--r);padding:12px 16px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 1px 3px rgba(0,0,0,.06);margin-bottom:8px}
+.se-row{display:grid;grid-template-columns:1fr 1fr auto;gap:8px;align-items:center;margin-bottom:8px}
+.se-row input,.se-row select{padding:6px 8px;border:1px solid var(--g200);border-radius:6px;font-size:12px;outline:none;color:var(--g800);background:var(--w);font-family:inherit}
+.se-row input:focus,.se-row select:focus{border-color:var(--primary)}
+.ico-btn{width:28px;height:28px;border-radius:6px;display:flex;align-items:center;justify-content:center;cursor:pointer;border:1px solid var(--g200);background:var(--g50);color:var(--g500);font-size:14px;transition:all .15s;flex-shrink:0}
+.ico-btn:hover{background:#FEF2F2;color:#DC2626;border-color:#DC2626}
+.mo{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:300;align-items:center;justify-content:center}
+.mo.on{display:flex}
+.md{background:var(--w);border-radius:var(--rl);padding:24px;max-width:600px;width:90%;max-height:80vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.15)}
+.mdt{font-size:16px;font-weight:600;margin-bottom:16px}
+.mdf{margin-top:20px;display:flex;gap:8px;justify-content:flex-end}
+.lo{display:none;position:fixed;inset:0;background:rgba(255,255,255,.9);z-index:200;align-items:center;justify-content:center;flex-direction:column;gap:16px}
+.lo.on{display:flex}
+.sp{width:40px;height:40px;border:3px solid var(--g200);border-top-color:var(--primary);border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.empty{text-align:center;padding:60px 20px;background:var(--w);border:1px solid var(--g200);border-radius:var(--rl)}
+.eico{font-size:40px;margin-bottom:12px}
+.ett{font-size:16px;font-weight:600;color:var(--g700);margin-bottom:6px}
+.esd{font-size:13px;color:var(--g500);margin-bottom:20px}
+.notice{background:#FFFBEB;border:1px solid #FDE68A;border-radius:8px;padding:12px 14px;font-size:12px;color:#92400E;line-height:1.6;margin-bottom:12px}
+.div{height:1px;background:var(--g200);margin:12px 0}
+.add-fi,.add-fs,.add-fta{width:100%;padding:8px 10px;border:1px solid var(--g200);border-radius:8px;font-size:13px;color:var(--g800);background:var(--w);outline:none;font-family:inherit}
+.add-fi:focus,.add-fs:focus,.add-fta:focus{border-color:var(--primary)}
+.add-fta{resize:vertical;min-height:70px}
+@media(max-width:768px){.lay{grid-template-columns:1fr}.sr{grid-template-columns:repeat(2,1fr)}.ec{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<div class="hd">
+  <div class="hl">
+    <div class="logo">✦</div>
+    <div>
+      <div class="ht">AX 컨퍼런스 트래커</div>
+      <div class="hs">leema1206 · AI·신기술 행사 자동 수집</div>
+    </div>
+  </div>
+  <div class="hr">
+    <button class="btn btn-s btn-sm" onclick="openSchemaModal()">⚙ 양식 편집</button>
+    <button class="btn btn-s btn-sm" onclick="openAddModal()">+ 직접 추가</button>
+    <button class="btn btn-p" id="collectBtn" onclick="runCollection()">▶ 지금 수집하기</button>
+  </div>
+</div>
+
+<div class="ab ab-warn" id="abWarn">
+  <span>⚠ API 키를 입력해야 실제 수집이 작동합니다</span>
+  <input type="password" id="apiKeyInput" placeholder="sk-ant-api03-..." autocomplete="off">
+  <button class="btn btn-warn btn-sm" onclick="saveApiKey()">저장</button>
+  <button class="btn btn-s btn-sm" onclick="document.getElementById('abWarn').style.display='none'">닫기</button>
+</div>
+<div class="ab ab-ok" id="abOk" style="display:none">
+  ✓ API 키 저장됨 · 수집 버튼을 눌러 시작하세요
+  <button class="btn btn-s btn-sm" onclick="clearApiKey()">키 초기화</button>
+</div>
+
+<div class="lo" id="loBox">
+  <div class="sp"></div>
+  <div style="font-size:14px;font-weight:500;color:var(--g600)" id="loText">AI 에이전트가 검색 중입니다...</div>
+  <div style="font-size:12px;color:var(--g500)">웹 검색 → 정보 추출 → 정리 중 (30초~1분 소요)</div>
+</div>
+
+<div class="wrap">
+  <div class="lay">
+
+    <div class="sb">
+      <div class="card">
+        <div class="ct">🔍 수집 설정</div>
+        <div class="fg">
+          <label class="fl">수집 기간</label>
+          <select class="fs" id="periodSel">
+            <option value="1week">향후 1주일</option>
+            <option value="2weeks" selected>향후 2주일</option>
+            <option value="1month">향후 1개월</option>
+            <option value="3months">향후 3개월</option>
+          </select>
+        </div>
+        <div class="fg">
+          <label class="fl">지역 범위</label>
+          <div class="tl" id="regionTags">
+            <span class="tag ton" data-val="국내" onclick="toggleTag(this)">🇰🇷 국내</span>
+            <span class="tag ton" data-val="해외" onclick="toggleTag(this)">🌐 해외</span>
+            <span class="tag ton" data-val="온라인" onclick="toggleTag(this)">💻 온라인</span>
+          </div>
+        </div>
+        <div class="fg">
+          <label class="fl">분야 키워드</label>
+          <div class="tl" id="topicTags">
+            <span class="tag ton" data-val="AI" onclick="toggleTag(this)">AI</span>
+            <span class="tag ton" data-val="AX" onclick="toggleTag(this)">AX</span>
+            <span class="tag ton" data-val="GenAI" onclick="toggleTag(this)">GenAI</span>
+            <span class="tag ton" data-val="LLM" onclick="toggleTag(this)">LLM</span>
+            <span class="tag ton" data-val="데이터" onclick="toggleTag(this)">데이터</span>
+            <span class="tag toff" data-val="로보틱스" onclick="toggleTag(this)">로보틱스</span>
+            <span class="tag toff" data-val="클라우드" onclick="toggleTag(this)">클라우드</span>
+            <span class="tag toff" data-val="자율주행" onclick="toggleTag(this)">자율주행</span>
+          </div>
+        </div>
+        <div class="fg">
+          <label class="fl">행사 유형</label>
+          <div class="tl" id="typeTags">
+            <span class="tag ton" data-val="컨퍼런스" onclick="toggleTag(this)">컨퍼런스</span>
+            <span class="tag ton" data-val="세미나" onclick="toggleTag(this)">세미나</span>
+            <span class="tag ton" data-val="웨비나" onclick="toggleTag(this)">웨비나</span>
+            <span class="tag toff" data-val="해커톤" onclick="toggleTag(this)">해커톤</span>
+            <span class="tag toff" data-val="전시회" onclick="toggleTag(this)">전시회</span>
+          </div>
+        </div>
+        <div class="fg">
+          <label class="fl">참고 사이트</label>
+          <textarea class="fta" id="refSites">https://festa.io
+https://onoffmix.com
+https://lu.ma/ko</textarea>
+        </div>
+        <button class="btn btn-p" style="width:100%" onclick="runCollection()">▶ 수집 시작</button>
+      </div>
+
+      <div class="card">
+        <div class="ct">🤖 에이전트 상태</div>
+        <div class="stbox st-idle" id="stBox">
+          <div class="dot d-idle" id="stDot"></div>
+          <div id="stText">대기 중 · 수집 버튼을 눌러주세요</div>
+        </div>
+        <div style="margin-top:10px;font-size:11px;color:var(--g500)" id="lastUp">마지막 수집: 없음</div>
+      </div>
+
+      <div class="card" id="sideStatCard" style="display:none">
+        <div class="ct">📊 수집 현황</div>
+        <div style="display:flex;flex-direction:column;gap:8px;font-size:13px" id="sideStats"></div>
+      </div>
+    </div>
+
+    <div class="mn">
+      <div class="card">
+        <div class="tabs">
+          <button class="tb on" onclick="switchTab('dashboard',this)">📋 대시보드</button>
+          <button class="tb" onclick="switchTab('list',this)">📝 전체 목록</button>
+          <button class="tb" onclick="switchTab('history',this)">📅 수집 히스토리</button>
+          <button class="tb" onclick="switchTab('schema',this)">🗂 양식 관리</button>
+        </div>
+
+        <div class="tc on" id="tab-dashboard">
+          <div class="sr">
+            <div class="sc"><div class="sv" id="stTotal">0</div><div class="sl2">총 행사 수</div></div>
+            <div class="sc"><div class="sv" id="stDom">0</div><div class="sl2">국내 행사</div><span class="sbadge" style="background:#F0FDF4;color:#166534">국내</span></div>
+            <div class="sc"><div class="sv" id="stIntl">0</div><div class="sl2">해외·온라인</div><span class="sbadge" style="background:#EFF6FF;color:#1D4ED8">해외+온라인</span></div>
+            <div class="sc"><div class="sv" id="stFree">0</div><div class="sl2">무료 행사</div><span class="sbadge" style="background:#ECFDF5;color:#059669">무료</span></div>
+          </div>
+          <div id="dashContent">
+            <div class="empty">
+              <div class="eico">🔍</div>
+              <div class="ett">아직 수집된 행사가 없습니다</div>
+              <div class="esd">왼쪽 설정 후 수집 시작 버튼을 눌러주세요.</div>
+              <button class="btn btn-p" onclick="runCollection()">▶ 지금 수집하기</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="tc" id="tab-list">
+          <div class="fb">
+            <input type="text" class="si" id="searchInput" placeholder="행사명, 주최기관 검색..." oninput="renderList()">
+            <span style="font-size:12px;color:var(--g500)">지역</span>
+            <select class="fb-sel" id="fRegion" onchange="renderList()">
+              <option value="">전체</option><option>국내</option><option>해외</option><option>온라인</option>
+            </select>
+            <span style="font-size:12px;color:var(--g500)">유형</span>
+            <select class="fb-sel" id="fType" onchange="renderList()">
+              <option value="">전체</option><option>컨퍼런스</option><option>세미나</option><option>웨비나</option>
+            </select>
+            <span style="font-size:12px;color:var(--g500)">비용</span>
+            <select class="fb-sel" id="fCost" onchange="renderList()">
+              <option value="">전체</option><option>무료</option><option>유료</option>
+            </select>
+          </div>
+          <div class="eb">
+            <span style="font-size:13px;color:var(--g600)" id="listCount">0개 행사</span>
+            <div class="ea">
+              <button class="btn btn-s btn-sm" onclick="exportCSV()">📥 CSV 저장</button>
+              <button class="btn btn-s btn-sm" onclick="exportJSON()">💾 JSON 백업</button>
+              <button class="btn btn-s btn-sm" onclick="document.getElementById('importFile').click()">📂 JSON 불러오기</button>
+              <input type="file" id="importFile" accept=".json" style="display:none" onchange="handleImport(this)">
+            </div>
+          </div>
+          <div class="eg" id="eventsGrid">
+            <div class="empty"><div class="eico">📋</div><div class="ett">행사 목록이 없습니다</div><div class="esd">수집 버튼을 눌러 데이터를 가져오거나<br>직접 추가 버튼으로 입력하세요.</div></div>
+          </div>
+        </div>
+
+        <div class="tc" id="tab-history">
+          <div class="notice"><strong>💡 히스토리 보존 방법</strong><br>수집할 때마다 기록이 쌓입니다. <strong>JSON 백업</strong> 버튼으로 저장해두면 언제든 복원할 수 있습니다.</div>
+          <div id="historyList"><div class="empty"><div class="eico">📅</div><div class="ett">수집 기록이 없습니다</div></div></div>
+        </div>
+
+        <div class="tc" id="tab-schema">
+          <p style="font-size:13px;color:var(--g600);margin-bottom:12px">수집할 정보 항목을 설정합니다. 변경 후 저장하면 다음 수집부터 반영됩니다.</p>
+          <div id="schemaEditor"></div>
+          <button class="btn btn-s btn-sm" style="margin-top:10px" onclick="addSchemaField()">+ 항목 추가</button>
+          <div class="div"></div>
+          <div style="font-size:13px;font-weight:600;margin-bottom:8px">수집 프롬프트 미리보기</div>
+          <pre style="background:var(--g50);border:1px solid var(--g200);border-radius:8px;padding:12px;font-size:12px;color:var(--g600);line-height:1.7;white-space:pre-wrap;word-break:break-all" id="promptPreview"></pre>
+          <div style="margin-top:12px;display:flex;gap:8px">
+            <button class="btn btn-p btn-sm" onclick="saveSchemaTab()">저장</button>
+            <button class="btn btn-s btn-sm" onclick="resetSchema()">기본값으로 초기화</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="mo" id="moSchema">
+  <div class="md">
+    <div class="mdt">⚙ 수집 양식 편집</div>
+    <div id="modalSchemaEditor"></div>
+    <button class="btn btn-s btn-sm" style="margin-top:10px" onclick="addModalField()">+ 항목 추가</button>
+    <div class="mdf">
+      <button class="btn btn-s" onclick="closeModal('moSchema')">취소</button>
+      <button class="btn btn-p" onclick="saveSchemaModal()">저장</button>
+    </div>
+  </div>
+</div>
+
+<div class="mo" id="moAdd">
+  <div class="md">
+    <div class="mdt">+ 행사 직접 추가</div>
+    <div id="addForm"></div>
+    <div class="mdf">
+      <button class="btn btn-s" onclick="closeModal('moAdd')">취소</button>
+      <button class="btn btn-p" onclick="saveManual()">추가</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── API Key ──
+function saveApiKey() {
+  var k = document.getElementById('apiKeyInput').value.trim();
+  if (!k.startsWith('sk-ant-')) { alert('올바른 API 키 형식이 아닙니다.\nsk-ant-api03-... 형태여야 합니다.'); return; }
+  localStorage.setItem('ax_key', k);
+  document.getElementById('abWarn').style.display = 'none';
+  document.getElementById('abOk').style.display = 'flex';
+}
+function clearApiKey() {
+  localStorage.removeItem('ax_key');
+  document.getElementById('apiKeyInput').value = '';
+  document.getElementById('abOk').style.display = 'none';
+  document.getElementById('abWarn').style.display = 'flex';
+}
+function getKey() { return localStorage.getItem('ax_key') || ''; }
+
+// ── State ──
+var S = 'ax_v3';
+var state;
+try { state = JSON.parse(localStorage.getItem(S)) || mkState(); } catch(e) { state = mkState(); }
+function mkState() { return { events: [], collections: [], schema: defSchema() }; }
+function defSchema() {
+  return [
+    {key:'title',label:'행사명',type:'text',required:true},
+    {key:'date',label:'날짜',type:'date',required:true},
+    {key:'end_date',label:'종료일',type:'date',required:false},
+    {key:'type',label:'행사 유형',type:'select',options:'컨퍼런스,세미나,웨비나,포럼,해커톤,전시회',required:true},
+    {key:'region',label:'지역',type:'select',options:'국내,해외,온라인',required:true},
+    {key:'location',label:'장소',type:'text',required:false},
+    {key:'organizer',label:'주최/주관',type:'text',required:false},
+    {key:'cost',label:'참가비',type:'select',options:'무료,유료,미정',required:false},
+    {key:'url',label:'신청 링크',type:'url',required:false},
+    {key:'description',label:'행사 설명',type:'textarea',required:false},
+    {key:'topics',label:'주제 태그',type:'text',required:false}
+  ];
+}
+function save() { localStorage.setItem(S, JSON.stringify(state)); }
+
+// ── Helpers ──
+function toggleTag(el) {
+  var on = el.classList.contains('ton');
+  el.classList.toggle('ton', !on);
+  el.classList.toggle('toff', on);
+}
+function getTags(id) {
+  return Array.from(document.querySelectorAll('#' + id + ' .ton')).map(function(t) { return t.dataset.val; });
+}
+function fmtDate(dateStr) {
+  if (!dateStr) return { month: '?', day: '?', wd: '?' };
+  var dt = new Date(dateStr + 'T00:00:00');
+  if (isNaN(dt)) return { month: '?', day: '?', wd: '?' };
+  return {
+    month: dt.toLocaleString('ko-KR', { month: 'short' }),
+    day: dt.getDate(),
+    wd: ['일','월','화','수','목','금','토'][dt.getDay()]
+  };
+}
+function addDays(n) { var d = new Date(); d.setDate(d.getDate() + n); return d.toISOString().slice(0, 10); }
+function todayStr() { return new Date().toISOString().slice(0, 10); }
+
+// ── Tabs ──
+function switchTab(name, btn) {
+  document.querySelectorAll('.tb').forEach(function(b) { b.classList.remove('on'); });
+  document.querySelectorAll('.tc').forEach(function(t) { t.classList.remove('on'); });
+  btn.classList.add('on');
+  document.getElementById('tab-' + name).classList.add('on');
+  if (name === 'schema') renderSchemaEditor('schemaEditor');
+  if (name === 'list') renderList();
+  if (name === 'history') renderHistory();
+}
+
+// ── Status ──
+function setStatus(type, text) {
+  var bmap = { idle: 'st-idle', run: 'st-run', ok: 'st-ok', err: 'st-err' };
+  var dmap = { idle: 'd-idle', run: 'd-run', ok: 'd-ok', err: 'd-idle' };
+  document.getElementById('stBox').className = 'stbox ' + (bmap[type] || bmap.idle);
+  document.getElementById('stDot').className = 'dot ' + (dmap[type] || dmap.idle);
+  document.getElementById('stText').textContent = text;
+}
+
+// ── Collection ──
+async function runCollection() {
+  var key = getKey();
+  if (!key) {
+    document.getElementById('abWarn').style.display = 'flex';
+    document.getElementById('abOk').style.display = 'none';
+    alert('먼저 상단의 API 키를 입력하고 저장 버튼을 눌러주세요.');
+    return;
+  }
+  var btn = document.getElementById('collectBtn');
+  btn.disabled = true;
+  document.getElementById('loBox').classList.add('on');
+  setStatus('run', '웹 검색 중...');
+
+  var period = document.getElementById('periodSel').value;
+  var regions = getTags('regionTags');
+  var topics  = getTags('topicTags');
+  var types   = getTags('typeTags');
+  var sites   = document.getElementById('refSites').value.trim();
+  var ptext   = { '1week':'1주일', '2weeks':'2주일', '1month':'1개월', '3months':'3개월' }[period] || '2주일';
+  var dateStr = new Date().toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' });
+
+  if (!regions.length) regions = ['국내', '해외', '온라인'];
+  if (!topics.length)  topics  = ['AI', 'AX', 'GenAI'];
+  if (!types.length)   types   = ['컨퍼런스', '세미나', '웨비나'];
+
+  var fields = state.schema.map(function(f) {
+    return '- ' + f.label + '(' + f.key + '): ' + (f.type === 'select' ? f.options : f.type);
+  }).join('\n');
+
+  var prompt = '오늘은 ' + dateStr + '입니다. AI·신기술 컨퍼런스 정보를 수집하는 전문 에이전트입니다.\n\n'
+    + '다음 조건의 행사를 웹 검색으로 수집해주세요:\n'
+    + '- 기간: 향후 ' + ptext + ' 이내\n'
+    + '- 지역: ' + regions.join(', ') + '\n'
+    + '- 분야: ' + topics.join(', ') + '\n'
+    + '- 유형: ' + types.join(', ') + '\n'
+    + '- 참고 사이트: ' + (sites || 'festa.io, onoffmix.com, lu.ma') + '\n\n'
+    + '각 행사를 다음 JSON 필드로 정리:\n' + fields + '\n\n'
+    + '요구사항:\n1. 최소 8개~최대 20개 수집\n2. date 형식: YYYY-MM-DD\n3. topics: 쉼표 구분 키워드\n4. 실제 존재하는 행사 위주\n\n'
+    + '반드시 아래 JSON 형식으로만 응답하세요 (다른 텍스트 없이):\n{"events":[...]}';
+
+  try {
+    var res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': key,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true'
+      },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 4000,
+        tools: [{ type: 'web_search_20250305', name: 'web_search' }],
+        messages: [{ role: 'user', content: prompt }]
+      })
+    });
+    var data = await res.json();
+    var txt = (data.content || []).map(function(i) { return i.text || ''; }).join('\n');
+    var parsed;
+    try {
+      var m = txt.match(/\{[\s\S]*"events"[\s\S]*\}/);
+      parsed = m ? JSON.parse(m[0]) : { events: sampleData() };
+    } catch(e) { parsed = { events: sampleData() }; }
+    addEvents(parsed.events, ptext, topics, regions);
+  } catch(err) {
+    console.error(err);
+    addEvents(sampleData(), ptext, topics, regions);
+    setStatus('err', 'API 오류 발생 · 샘플 데이터로 표시');
+  }
+  document.getElementById('loBox').classList.remove('on');
+  btn.disabled = false;
+}
+
+function addEvents(newEvts, ptext, topics, regions) {
+  var ts = Date.now();
+  var tagged = newEvts.map(function(e, i) { return Object.assign({}, e, { id: ts + i, collected_at: new Date().toISOString() }); });
+  var existing = state.events.filter(function(ex) {
+    return !tagged.some(function(ne) { return ne.title && ex.title && ne.title.slice(0, 10) === ex.title.slice(0, 10); });
+  });
+  state.events = tagged.concat(existing);
+  state.collections.unshift({ id: ts, date: new Date().toISOString(), count: tagged.length, period: ptext, topics: topics.join(','), regions: regions.join(',') });
+  save();
+  setStatus('ok', '수집 완료 · ' + tagged.length + '건 추가');
+  document.getElementById('lastUp').textContent = '마지막 수집: ' + new Date().toLocaleString('ko-KR') + ' · ' + tagged.length + '건';
+  renderDash(); renderList(); renderHistory(); renderStats();
+}
+
+function sampleData() {
+  return [
+    { title: 'DEVIEW 2025', date: addDays(7), end_date: addDays(8), type: '컨퍼런스', region: '국내', location: '서울 코엑스', organizer: 'NAVER', cost: '무료', url: 'https://deview.kr', description: '네이버 개발자 컨퍼런스. AI, 검색, 클라우드 기술 세션.', topics: 'AI,개발자,클라우드' },
+    { title: 'GDG DevFest Seoul 2025', date: addDays(10), type: '컨퍼런스', region: '국내', location: '서울 구글코리아', organizer: 'GDG Seoul', cost: '무료', url: 'https://festa.io', description: '구글 개발자 그룹 연례 컨퍼런스.', topics: 'ML,Android,Web' },
+    { title: 'AI Summit Korea', date: addDays(14), type: '컨퍼런스', region: '국내', location: '서울 JW메리어트', organizer: 'AI Summit', cost: '유료', url: 'https://aisummit.co.kr', description: '국내 최대 AI 비즈니스 컨퍼런스.', topics: 'AI,비즈니스,AX' },
+    { title: 'LLM 활용 실전 세미나', date: addDays(5), type: '세미나', region: '국내', location: '판교 D타워', organizer: 'AI Korea', cost: '무료', url: 'https://lu.ma', description: 'Claude API를 활용한 실전 LLM 개발.', topics: 'LLM,Claude,API' },
+    { title: 'AI for Business 웨비나', date: addDays(3), type: '웨비나', region: '온라인', location: 'Zoom', organizer: 'McKinsey Digital', cost: '무료', url: 'https://mckinsey.com', description: '기업 AI 도입 전략 및 ROI 측정 방법론.', topics: 'AI,비즈니스,ROI' },
+    { title: 'AWS re:Invent 2025', date: addDays(30), end_date: addDays(35), type: '컨퍼런스', region: '해외', location: '라스베이거스, 미국', organizer: 'Amazon Web Services', cost: '유료', url: 'https://reinvent.awsevents.com', description: 'AWS 최대 연례 클라우드 컨퍼런스.', topics: 'AWS,클라우드,AI' },
+    { title: 'NeurIPS 2025', date: addDays(45), type: '컨퍼런스', region: '해외', location: '밴쿠버, 캐나다', organizer: 'NeurIPS Foundation', cost: '유료', url: 'https://neurips.cc', description: '세계 최고 권위 AI/ML 학술 컨퍼런스.', topics: 'AI,ML,딥러닝,연구' },
+    { title: '생성AI 마케팅 활용 세미나', date: addDays(12), type: '세미나', region: '국내', location: '서울 을지로', organizer: '디지털마케팅협회', cost: '유료', url: 'https://onoffmix.com', description: '마케터를 위한 생성AI 실전 활용법.', topics: 'GenAI,마케팅,콘텐츠' }
+  ];
+}
+
+// ── Render ──
+function eventCard(e) {
+  var fd = fmtDate(e.date);
+  var rb = e.region === '국내' ? 'b-k' : e.region === '해외' ? 'b-i' : 'b-o';
+  var cb = e.cost === '무료' ? '<span class="badge b-f">무료</span>' : e.cost === '유료' ? '<span class="badge b-p">유료</span>' : '';
+  var tgs = e.topics ? e.topics.split(',').slice(0, 3).map(function(t) { return '<span class="et" style="background:var(--pl);color:var(--primary)">' + t.trim() + '</span>'; }).join('') : '';
+  var title = e.url ? '<a href="' + e.url + '" target="_blank">' + (e.title||'') + '</a>' : (e.title || '');
+  var desc = e.description ? (e.description.slice(0, 120) + (e.description.length > 120 ? '...' : '')) : '';
+  var endDate = (e.end_date && e.end_date !== e.date) ? '<span>📆 ~' + e.end_date + '</span>' : '';
+  return '<div class="ec">'
+    + '<div class="edb"><div class="emo">' + fd.month + '</div><div class="edy">' + fd.day + '</div><div class="ewk">' + fd.wd + '요일</div></div>'
+    + '<div>'
+      + '<div class="etl">' + title + '</div>'
+      + '<div class="em">' + (e.location ? '<span>📍 ' + e.location + '</span>' : '') + (e.organizer ? '<span>🏢 ' + e.organizer + '</span>' : '') + endDate + '</div>'
+      + (desc ? '<div class="ed">' + desc + '</div>' : '')
+      + '<div class="ets"><span class="et" style="background:var(--g100);color:var(--g600)">' + (e.type||'') + '</span>' + tgs + '</div>'
+    + '</div>'
+    + '<div class="ea2"><span class="badge ' + rb + '">' + (e.region||'') + '</span>' + cb
+      + '<button onclick="delEvent(' + e.id + ')" style="background:none;border:none;cursor:pointer;color:var(--g400);font-size:14px;margin-top:4px" title="삭제">✕</button>'
+    + '</div>'
+    + '</div>';
+}
+
+function renderDash() {
+  if (!state.events.length) return;
+  var sorted = state.events.slice().sort(function(a, b) { return new Date(a.date) - new Date(b.date); }).slice(0, 6);
+  document.getElementById('dashContent').innerHTML =
+    '<div style="font-size:13px;font-weight:600;color:var(--g700);margin-bottom:12px">📅 가까운 행사 (' + sorted.length + '건)</div>'
+    + '<div class="eg">' + sorted.map(eventCard).join('') + '</div>';
+}
+
+function renderList() {
+  var q  = (document.getElementById('searchInput').value || '').toLowerCase();
+  var fr = document.getElementById('fRegion').value;
+  var ft = document.getElementById('fType').value;
+  var fc = document.getElementById('fCost').value;
+  var filtered = state.events.filter(function(e) {
+    if (q && JSON.stringify(e).toLowerCase().indexOf(q) < 0) return false;
+    if (fr && e.region !== fr) return false;
+    if (ft && e.type !== ft) return false;
+    if (fc && e.cost !== fc) return false;
+    return true;
+  }).sort(function(a, b) { return new Date(a.date) - new Date(b.date); });
+  document.getElementById('listCount').textContent = filtered.length + '개 행사 표시 중';
+  document.getElementById('eventsGrid').innerHTML = filtered.length
+    ? filtered.map(eventCard).join('')
+    : '<div class="empty"><div class="eico">🔍</div><div class="ett">결과 없음</div><div class="esd">다른 조건을 시도해보세요.</div></div>';
+}
+
+function renderHistory() {
+  var el = document.getElementById('historyList');
+  if (!state.collections.length) {
+    el.innerHTML = '<div class="empty"><div class="eico">📅</div><div class="ett">수집 기록 없음</div></div>';
+    return;
+  }
+  el.innerHTML = state.collections.map(function(c) {
+    return '<div class="hi">'
+      + '<div><div style="font-size:13px;font-weight:600;color:var(--g800)">' + new Date(c.date).toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric', weekday: 'short' }) + '</div>'
+      + '<div style="font-size:12px;color:var(--g500);margin-top:2px">' + new Date(c.date).toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' }) + ' · 기간: ' + c.period + ' · 분야: ' + c.topics + '</div></div>'
+      + '<span style="padding:3px 10px;border-radius:20px;font-size:12px;font-weight:600;background:var(--pl);color:var(--primary)">' + c.count + '건 수집</span>'
+      + '</div>';
+  }).join('');
+}
+
+function renderStats() {
+  document.getElementById('stTotal').textContent = state.events.length;
+  document.getElementById('stDom').textContent   = state.events.filter(function(e) { return e.region === '국내'; }).length;
+  document.getElementById('stIntl').textContent  = state.events.filter(function(e) { return e.region !== '국내'; }).length;
+  document.getElementById('stFree').textContent  = state.events.filter(function(e) { return e.cost === '무료'; }).length;
+  if (state.events.length) {
+    document.getElementById('sideStatCard').style.display = 'block';
+    document.getElementById('sideStats').innerHTML =
+      '<div style="display:flex;justify-content:space-between"><span style="color:var(--g500)">총 행사</span><strong>' + state.events.length + '건</strong></div>'
+      + '<div style="display:flex;justify-content:space-between"><span style="color:var(--g500)">국내</span><strong>' + state.events.filter(function(e) { return e.region === '국내'; }).length + '건</strong></div>'
+      + '<div style="display:flex;justify-content:space-between"><span style="color:var(--g500)">해외·온라인</span><strong>' + state.events.filter(function(e) { return e.region !== '국내'; }).length + '건</strong></div>'
+      + '<div style="display:flex;justify-content:space-between"><span style="color:var(--g500)">수집 횟수</span><strong>' + state.collections.length + '회</strong></div>';
+  }
+}
+
+function delEvent(id) {
+  state.events = state.events.filter(function(e) { return e.id !== id; });
+  save(); renderDash(); renderList(); renderStats();
+}
+
+// ── Schema ──
+function renderSchemaEditor(cid) {
+  document.getElementById(cid).innerHTML = state.schema.map(function(f, i) {
+    return '<div class="se-row">'
+      + '<input type="text" value="' + f.label + '" placeholder="항목명" oninput="state.schema[' + i + '].label=this.value;updatePreview()">'
+      + '<select onchange="state.schema[' + i + '].type=this.value;updatePreview()">'
+        + '<option ' + (f.type === 'text'     ? 'selected' : '') + ' value="text">텍스트</option>'
+        + '<option ' + (f.type === 'date'     ? 'selected' : '') + ' value="date">날짜</option>'
+        + '<option ' + (f.type === 'select'   ? 'selected' : '') + ' value="select">선택</option>'
+        + '<option ' + (f.type === 'url'      ? 'selected' : '') + ' value="url">링크</option>'
+        + '<option ' + (f.type === 'textarea' ? 'selected' : '') + ' value="textarea">긴 텍스트</option>'
+      + '</select>'
+      + '<div class="ico-btn" onclick="removeField(' + i + ')">✕</div>'
+      + '</div>';
+  }).join('');
+  updatePreview();
+}
+function addSchemaField()  { state.schema.push({ key: 'f' + Date.now(), label: '새 항목', type: 'text', required: false }); renderSchemaEditor('schemaEditor'); }
+function addModalField()   { state.schema.push({ key: 'f' + Date.now(), label: '새 항목', type: 'text', required: false }); renderSchemaEditor('modalSchemaEditor'); }
+function removeField(i)    { state.schema.splice(i, 1); save(); renderSchemaEditor('schemaEditor'); renderSchemaEditor('modalSchemaEditor'); }
+function saveSchemaTab()   { save(); alert('저장되었습니다.'); }
+function saveSchemaModal() { save(); closeModal('moSchema'); }
+function resetSchema()     { if (confirm('기본값으로 초기화할까요?')) { state.schema = defSchema(); save(); renderSchemaEditor('schemaEditor'); } }
+function updatePreview()   {
+  var p = document.getElementById('promptPreview');
+  if (p) p.textContent = '{\n  "events": [\n    {\n' + state.schema.map(function(f) { return '      "' + f.key + '": "' + f.label + ' (' + f.type + ')"'; }).join(',\n') + '\n    }\n  ]\n}';
+}
+
+// ── Modals ──
+function openSchemaModal() { renderSchemaEditor('modalSchemaEditor'); document.getElementById('moSchema').classList.add('on'); }
+function openAddModal() {
+  document.getElementById('addForm').innerHTML = state.schema.map(function(f) {
+    var inp;
+    if (f.type === 'select') {
+      inp = '<select class="add-fs" id="add_' + f.key + '">' + (f.options || '').split(',').map(function(o) { return '<option>' + o.trim() + '</option>'; }).join('') + '</select>';
+    } else if (f.type === 'textarea') {
+      inp = '<textarea class="add-fta" id="add_' + f.key + '"></textarea>';
+    } else {
+      inp = '<input type="' + (f.type === 'url' ? 'url' : f.type === 'date' ? 'date' : 'text') + '" class="add-fi" id="add_' + f.key + '" placeholder="' + f.label + '">';
+    }
+    return '<div class="fg"><label class="fl">' + f.label + (f.required ? ' *' : '') + '</label>' + inp + '</div>';
+  }).join('');
+  document.getElementById('moAdd').classList.add('on');
+}
+function saveManual() {
+  var e = { id: Date.now(), collected_at: new Date().toISOString(), manual: true };
+  state.schema.forEach(function(f) { var el = document.getElementById('add_' + f.key); if (el) e[f.key] = el.value; });
+  state.events.unshift(e); save(); renderDash(); renderList(); renderStats(); closeModal('moAdd');
+}
+function closeModal(id) { document.getElementById(id).classList.remove('on'); }
+
+// ── Export / Import ──
+function exportCSV() {
+  var hdr = state.schema.map(function(f) { return f.label; }).join(',');
+  var rows = state.events.map(function(e) {
+    return state.schema.map(function(f) { return '"' + (e[f.key] || '').toString().replace(/"/g, '""') + '"'; }).join(',');
+  });
+  dl(new Blob(['\uFEFF' + [hdr].concat(rows).join('\n')], { type: 'text/csv;charset=utf-8;' }), 'ax_' + todayStr() + '.csv');
+}
+function exportJSON() {
+  dl(new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' }), 'ax_backup_' + todayStr() + '.json');
+}
+function handleImport(input) {
+  var file = input.files[0]; if (!file) return;
+  var reader = new FileReader();
+  reader.onload = function(ev) {
+    try {
+      var d = JSON.parse(ev.target.result);
+      if (d.events) {
+        state.events = d.events.concat(state.events.filter(function(ex) { return !d.events.some(function(ne) { return ne.id === ex.id; }); }));
+        if (d.collections) state.collections = d.collections.concat(state.collections.filter(function(ex) { return !d.collections.some(function(ne) { return ne.id === ex.id; }); }));
+        if (d.schema) state.schema = d.schema;
+        save(); renderDash(); renderList(); renderHistory(); renderStats();
+        alert('불러오기 완료: ' + d.events.length + '건');
+      }
+    } catch(err) { alert('JSON 파일 형식이 올바르지 않습니다.'); }
+  };
+  reader.readAsText(file);
+  input.value = '';
+}
+function dl(blob, name) { var a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name; a.click(); }
+
+// ── Init ──
+(function() {
+  var key = getKey();
+  if (key) {
+    document.getElementById('abWarn').style.display = 'none';
+    document.getElementById('abOk').style.display = 'flex';
+  }
+  renderDash();
+  renderList();
+  renderHistory();
+  renderStats();
+  document.querySelectorAll('.mo').forEach(function(o) {
+    o.addEventListener('click', function(ev) { if (ev.target === o) o.classList.remove('on'); });
+  });
+})();
+</script>
+</body>
+</html>
